@@ -1,8 +1,8 @@
 <template>
   <div>
-    <input 
-      v-for="p in phaseCount" 
-      :key="p" 
+    <input
+      v-for="p in phaseCount"
+      :key="p"
       :id="`radio-${p}`"
       :checked="p==1"
       :value="p"
@@ -10,15 +10,21 @@
       type="radio">
     <template
       v-for="p in phaseCount">
-      <input 
-        v-for="c in cardCount" 
-        :key="p,c" 
+      <input
+        v-for="c in cardCount"
+        :key="p,c"
         :id="`radio-${p}-check-${c}`"
+        type="checkbox">
+      <input
+        v-for="c in cardCount"
+        :key="p,c"
+        :id="`radio-${p}-check-${c}-wrong`"
+        :class="[`p-${p}`]"
         type="checkbox">
     </template>
 
     <div class="cards">
-      <div 
+      <div
         v-for="c in cardCount"
         :key="c"
         :class="['card', `c-${c}`]">
@@ -26,14 +32,24 @@
           v-for="p in phaseCount"
           :key="p,c"
           :for="`radio-${p}-check-${c}`"
-          :class="[`p-${p}`]"/>
+          :class="['open', `p-${p}`]"/>
+        <label
+          v-for="p in phaseCount"
+          :key="p,c"
+          :for="`radio-${p}-check-${c}-wrong`"
+          :class="['wrong', `m-${(c-1)%markCount + 1}`, `p-${p}`]"/>
         <div class="front">
           <div class="face">
-            {{ mark[c%markCount-1] }}
+            {{ mark[(c-1)%markCount] }}
           </div>
         </div>
         <div class="back" />
-      </div>    
+      </div>
+    </div>
+
+    <div class="failed">
+      <label for="radio-2"/>
+      お手付き
     </div>
   </div>
 </template>
@@ -114,6 +130,20 @@ body {
   }
 }
 
+.failed {
+  display: none;
+  position: relative;
+  width: 300px;
+  height: 100px;
+
+  label {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
 .card-rotate {
   transform: rotateY(180deg);
   label {
@@ -126,7 +156,7 @@ body {
 }
 
 @for $p from 1 through $phase-count {
-  #radio-#{$p}:checked ~ .cards .card .p-#{$p} {
+  #radio-#{$p}:checked ~ .cards .card .p-#{$p}.open {
     @extend .show;
   }
 
@@ -137,6 +167,25 @@ body {
       .card.c-#{$c} {
       @extend .card-rotate;
     }
+
+    #radio-#{$p}:checked
+      ~ #radio-#{$p}-check-#{$c}-wrong:checked
+      ~ .cards
+      .card.c-#{$c} {
+      @extend .card-rotate;
+    }
+
+    #radio-#{$p}:checked
+      ~ #radio-#{$p}-check-#{$c}:checked
+      ~ .cards
+      .card:not(.c-#{$c})
+      :not(.m-#{($c - 1)%$mark-count + 1}).p-#{$p}.wrong {
+      @extend .show;
+    }
+  }
+
+  #radio-#{$p}:checked ~ [id$='wrong'].p-#{$p}:checked ~ .failed {
+    @extend .show;
   }
 }
 </style>
