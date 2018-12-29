@@ -8,6 +8,11 @@
       :value="p"
       name="radio-phase"
       type="radio">
+    <input
+      v-for="m in markCount"
+      :key="m"
+      :id="`check-${m}-correct`"
+      type="checkbox">
     <template
       v-for="p in phaseCount">
       <input
@@ -38,6 +43,10 @@
           :key="p,c"
           :for="`radio-${p}-check-${c}-wrong`"
           :class="['wrong', `m-${(c-1)%markCount + 1}`, `p-${p}`]"/>
+        <label
+          :key="c"
+          :for="`check-${(c-1)%markCount + 1}-correct`"
+          :class="['correct', `m-${(c-1)%markCount + 1}`]"/>
         <div class="front">
           <div class="face">
             {{ mark[(c-1)%markCount] }}
@@ -182,10 +191,25 @@ body {
       :not(.m-#{($c - 1)%$mark-count + 1}).p-#{$p}.wrong {
       @extend .show;
     }
+
+    #radio-#{$p}:checked
+      ~ #radio-#{$p}-check-#{$c}:checked
+      ~ .cards
+      .card:not(.c-#{$c})
+      .m-#{($c - 1)%$mark-count
+      + 1}.correct {
+      @extend .show;
+    }
   }
 
   #radio-#{$p}:checked ~ [id$='wrong'].p-#{$p}:checked ~ .failed {
     @extend .show;
+  }
+}
+
+@for $c from 1 through $card-count {
+  #check-#{($c - 1)%$mark-count + 1}-correct:checked ~ .cards .card.c-#{$c} {
+    @extend .card-rotate;
   }
 }
 </style>
