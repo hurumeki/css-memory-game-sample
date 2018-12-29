@@ -96,13 +96,16 @@ body {
   }
 }
 
+.card-rotate {
+  transform: rotateY(180deg);
+  label {
+    transform: translateZ(-1px);
+  }
+}
+
 @for $c from 1 through $card-count {
   #check-#{$c}:checked ~ .cards .card.c-#{$c} {
-    transform: rotateY(180deg);
-
-    label {
-      transform: translateZ(-1px);
-    }
+    @extend .card-rotate;
   }
 }
 </style>
