@@ -185,6 +185,8 @@ body {
     }
 
     #radio-#{$p}:checked
+      ~ #check-#{($c - 1)%$mark-count
+      + 1}-correct:not(:checked)
       ~ #radio-#{$p}-check-#{$c}:checked
       ~ .cards
       .card:not(.c-#{$c})
